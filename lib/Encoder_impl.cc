@@ -36,7 +36,7 @@ namespace gr {
         (new Encoder_impl(preamble, dataLength, sourceAddr, destAddr));
     }
 
-
+    /*Function to generate CRC Lookup Table*/
     uint32_t Encoder_impl::crc32_for_byte(uint32_t r)
     {
       for(int j = 0; j < 8; ++j)
@@ -90,7 +90,8 @@ namespace gr {
       const char *in = (const char *) input_items[0];
       char *out = (char *) output_items[0];
 
-      if(ninput_items[0]<10)
+      //If input data is less than data length, wait for more data
+      if(ninput_items[0]<d_dataLength)
     	  return 0;
 
       //Create Output Frame

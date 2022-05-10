@@ -49,6 +49,7 @@ namespace gr {
         return count;
     }
 
+    /*Pack 8 bits to a byte*/
     uint8_t PackBits(const char* in)
     {
     	uint8_t out=0;
@@ -86,8 +87,6 @@ namespace gr {
     }
 
 
-
-
     /*
      * The private constructor
      */
@@ -105,18 +104,6 @@ namespace gr {
     	d_printAfterNFrames = printAfterNFrames;
 
     	d_data = data;
-
-
-		  std::bitset<8> a(preamble[0]);
-		  std::cout<<"preamble1: "<<a<<std::endl;
-
-		  std::bitset<8> b(preamble[1]);
-		  std::cout<<"preamble2: "<<b<<std::endl;
-
-
-		  std::bitset<16> y(d_preamble);
-		  std::cout<<"preamble: "<<y<<std::endl;
-
 
     	//Initialize CRC Table
         for(size_t i = 0; i < 0x100; ++i)
@@ -154,6 +141,7 @@ namespace gr {
       char rxSrcAddr;
       char rxDstAddr;
 
+      //If input data is less than a complete packet, wait for more data
       if(ninput_items[0]<(((2+2+d_dataLength+4)*8)))
     	  return 0;
 
@@ -170,10 +158,6 @@ namespace gr {
     		  rxedPreamble|= in[i];
 
 
-//    		  std::bitset<16> y(rxedPreamble);
-//    		  std::cout<<"in: "<<(int)in[i]<<"  "<<y<<std::endl;
-
-
     		  preambleMatch = rxedPreamble ^ d_preamble;
     		  preambleDiff = countSetBits(preambleMatch);
 
@@ -185,7 +169,7 @@ namespace gr {
     			  if(preambleDiff==0)
     			  {
     				 state= NORMAL_AFTER_PREAMBLE;
-    				 std::cout<<"22222"<<std::endl;
+    				 std::cout<<"Preamble Found"<<std::endl;
     				 consume_each (maxPreambleCorrIdx+1);
     				 return 0;
     			  }
@@ -196,7 +180,7 @@ namespace gr {
     	  if (minPreambleDiff<=MAX_PREAMBLE_ERROR_BITS)
     	  {
     		  state= NORMAL_AFTER_PREAMBLE;
-    		  std::cout<<"333333333     "<<rxedPreamble<<std::endl;
+    		  std::cout<<"Partial Preamble Found"<<rxedPreamble<<std::endl;
     		  consume_each (maxPreambleCorrIdx+1);
     		  return 0;
     	  }
@@ -209,19 +193,6 @@ namespace gr {
     	  break;
 
       case NORMAL_AFTER_PREAMBLE:
-
-//    	  std::cout<<std::endl;
-//
-//    	  for(i=0; i<ninput_items[0]; i++)
-//    	      	  {
-//    		  	  	  std::cout<<(int)in[i];
-//    		  	  	  if((i+1)%8 ==0)
-//    		  	  	  {
-//
-//    		  	  		  std::cout<<"  ";
-//    		  	  	  }
-//    	      	  }
-//    	  std::cout<<std::endl;
 
     	  rxSrcAddr = PackBits(&in[0]);
     	  rxDstAddr = PackBits(&in[8]);
@@ -241,25 +212,8 @@ namespace gr {
 
       case NORMAL:
 
-    	  //std::cout<<ninput_items[0]<<std::endl;
-    	  unsigned int preAmbleBitErrors = CheckPreAmble(&in[0]);
-    	 // std::cout<<std::endl;
 
-//    	  for(i=0; i<ninput_items[0]; i++)
-//    	      	  {
-//    		  	  	  std::cout<<(int)in[i];
-//    		  	  	  if((i+1)%8 ==0)
-//    		  	  	  {
-//
-//    		  	  		  std::cout<<"  ";
-//    		  	  	  }
-//    	      	  }
-//    	  std::cout<<std::endl;
-//    	  if(preAmbleBitErrors)
-//    	  {
-//    		  std::cout<<"PPPPPPPPPPPPPp"<<std::endl;
-//    		  return -1;
-//    	  }
+    	  unsigned int preAmbleBitErrors = CheckPreAmble(&in[0]);
     	  preambleErrorSum+=preAmbleBitErrors;
     	  if(preAmbleBitErrors>MAX_PREAMBLE_ERROR_BITS)
     	  {
@@ -296,6 +250,7 @@ namespace gr {
 
     }
 
+    /*Function to generate CRC Lookup Table*/
     uint32_t Decoder_impl::crc32_for_byte(uint32_t r)
     {
       for(int j = 0; j < 8; ++j)
