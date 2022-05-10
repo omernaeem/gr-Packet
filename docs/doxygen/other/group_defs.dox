@@ -1,0 +1,7 @@
+/*!
+ * \defgroup block GNU Radio PACKET C++ Signal Processing Blocks
+ * \brief All C++ blocks that can be used from the PACKET GNU Radio
+ *        module are listed here or in the subcategories below.
+ *
+ */
+

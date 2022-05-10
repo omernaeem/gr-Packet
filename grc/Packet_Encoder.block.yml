@@ -1,0 +1,28 @@
+id: Packet_Encoder
+label: Encoder
+category: '[Packet]'
+templates:
+  imports: import Packet
+  make: Packet.Encoder(${preamble}, ${dataLength}, ${sourceAddr}, ${destAddr})
+parameters:
+- id: preamble
+  label: Preamble
+  dtype: raw
+- id: dataLength
+  label: Data Length
+  dtype: int
+- id: sourceAddr
+  label: Source Address
+  dtype: byte
+- id: destAddr
+  label: Destination Address
+  dtype: byte
+inputs:
+- label: in
+  domain: stream
+  dtype: byte
+outputs:
+- label: out
+  domain: stream
+  dtype: byte
+file_format: 1

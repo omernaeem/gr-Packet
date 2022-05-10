@@ -1,0 +1,35 @@
+id: Packet_Decoder
+label: Decoder
+category: '[Packet]'
+templates:
+  imports: import Packet
+  make: Packet.Decoder(${preamble}, ${dataLength}, ${sourceAddr}, ${destAddr}, ${data},
+    ${printAfterNFrames})
+parameters:
+- id: preamble
+  label: Preamble
+  dtype: raw
+- id: dataLength
+  label: Data Length
+  dtype: int
+- id: sourceAddr
+  label: Source Address
+  dtype: byte
+- id: destAddr
+  label: Destination Address
+  dtype: byte
+- id: data
+  label: Data
+  dtype: raw
+- id: printAfterNFrames
+  label: Print BER After N Frames
+  dtype: int
+inputs:
+- label: in
+  domain: stream
+  dtype: byte
+outputs:
+- label: out
+  domain: stream
+  dtype: byte
+file_format: 1
